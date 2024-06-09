@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"Trigger",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Trigger",
+  "parent":{
+    "name":"Triggers",
+    "path":"folders/Triggers.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"PathTrigger",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PathTrigger",
+  "parent":{
+    "name":"Triggers",
+    "path":"folders/Triggers.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

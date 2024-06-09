@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"RotateTrigger",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"RotateTrigger",
+  "parent":{
+    "name":"Triggers",
+    "path":"folders/Triggers.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

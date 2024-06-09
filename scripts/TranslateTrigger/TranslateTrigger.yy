@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"TranslateTrigger",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"TranslateTrigger",
+  "parent":{
+    "name":"Triggers",
+    "path":"folders/Triggers.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

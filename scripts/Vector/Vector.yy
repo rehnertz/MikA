@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"Vector",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Vector",
+  "parent":{
+    "name":"MikA",
+    "path":"MikA.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

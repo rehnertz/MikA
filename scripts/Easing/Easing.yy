@@ -1,0 +1,13 @@
+{
+  "$GMScript":"",
+  "%Name":"Easing",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Easing",
+  "parent":{
+    "name":"MikA",
+    "path":"MikA.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
