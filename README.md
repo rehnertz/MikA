@@ -15,10 +15,6 @@
 > 1. **Aligns will not work.** Everything related to aligns like x-align, y-align and bunny hopping will not work any more.
 > 1. **Platforms will not pull the player up.** In traditional engines, the player will get an extra jump if it collides with platforms. Platforms will also pull the player up if there is enough space. In our project, platforms only serve as one-way-through floors. There is no extra jump and no pulling up.
 
-## Known Issues
-
-- Movement of blocks on non-linear path cannot correctly push the player when any of the velocity components is small. The reason for this issue is that GameMaker rounds the coordinates in collision. It is very difficult to completely solve this problem without causing additional displacement, so we do **not** plan to do so in the future. For moving blocks, use linear path as possible as you can.
-
 ## Roadmap
 
 - Implement all common elements in I Wanna.

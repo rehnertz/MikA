@@ -1,3 +1,5 @@
+/// Feather use syntax-errors
+
 var dt = delta_time / 1000000
 var l = keyboard_check(vk_right) - keyboard_check(vk_left)
 var u = keyboard_check(vk_down) - keyboard_check(vk_up)
@@ -36,9 +38,4 @@ event_inherited()
 
 if (obstructed_at(x, y)) {
     kill()
-}
-
-var vy = to_global(0, velocity.y * dt)
-if (probe(vy.x, vy.y)) {
-    velocity.y = 0
 }

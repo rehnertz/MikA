@@ -22,11 +22,12 @@
   },
   "name":"MikA",
   "resources":[
-    {"id":{"name":"GameObject","path":"objects/GameObject/GameObject.yy",},},
     {"id":{"name":"obj_block","path":"objects/obj_block/obj_block.yy",},},
+    {"id":{"name":"obj_kinematic","path":"objects/obj_kinematic/obj_kinematic.yy",},},
     {"id":{"name":"obj_platform","path":"objects/obj_platform/obj_platform.yy",},},
     {"id":{"name":"obj_player","path":"objects/obj_player/obj_player.yy",},},
     {"id":{"name":"obj_trigger","path":"objects/obj_trigger/obj_trigger.yy",},},
+    {"id":{"name":"pth_test","path":"paths/pth_test/pth_test.yy",},},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},},
     {"id":{"name":"Easing","path":"scripts/Easing/Easing.yy",},},
     {"id":{"name":"ObjectMethod","path":"scripts/ObjectMethod/ObjectMethod.yy",},},

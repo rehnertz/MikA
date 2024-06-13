@@ -1,3 +1,5 @@
+/// Feather use syntax-errors
+
 event_inherited()
 movement_speed = 150
 max_fall_speed = 450
@@ -6,6 +8,9 @@ face = 1
 jump_speeds = [425, 350]
 jump_level = 1
 box = true
+
+downdir.rotate_(30)
+image_angle = 30
 
 /**
  * Kill the player.

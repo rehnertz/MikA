@@ -1,3 +1,5 @@
+/// Feather use syntax-errors
+
 event_inherited()
 
 /**
@@ -12,11 +14,11 @@ event_inherited()
 get_drivees = use_method(function(dx, dy) {
     var drivees = []
     var list = ds_list_create()
-    var margin = 1
+    var margin = max(abs(dx), abs(dy), 2)
     var n = collision_rectangle_list(
         bbox_left - margin, bbox_top - margin,
-        bbox_right + margin, bbox_right + margin,
-        GameObject, true, true, list, false
+        bbox_right + margin, bbox_bottom + margin,
+        obj_kinematic, true, true, list, false
     )
     for (var i = 0; i < n; i++) {
         var collided = list[| i]
@@ -40,7 +42,7 @@ get_drivees = use_method(function(dx, dy) {
 get_pushees = use_method(function(dx, dy) {
     static filter = function(collided) { return collided.box }
     
-    return get_probed(dx, dy, GameObject, false, filter)
+    return get_probed(dx, dy, obj_kinematic, false, filter)
 })
 
 /**
@@ -53,7 +55,8 @@ get_pushees = use_method(function(dx, dy) {
  * @param {Id.Instance} drivee
  */
 drive = use_method(function(dx, dy, drivee) {
-    drivee.translate(dx, dy)
+    var adjusted_disp = drivee.compute_driven_displacement(dx, dy)
+    drivee.translate(adjusted_disp.x, adjusted_disp.y)
 })
 
 /**
@@ -76,33 +79,17 @@ push = use_method(function(dx, dy, pushee) {
     instance_activate_object(self)
     
     // Due to rounding errors, the block may still collides with the pushee.
-    var x_before = x
-    var y_before = y
-    var udx = dx / dist
-    var udy = dy / dist
-    // Try to move back block.
-    var step = pushee.max_gap / 2
-    var dist_travelled = 0
-    while (pushee.cast_mask(pushee.x, pushee.y, self)) {
-        translate(-step * udx, -step * udy)
-        dist_travelled += step
-        if (dist_travelled >= 2) {
-            x = x_before
-            y = y_before
-            break
-        }
-    }
-    
-    // If the block does not move forward, we push the pushee outside instead.
-    if (dot_product(udx, udy, x - x_before, y - y_before) <= 0) {
-        x = x_before
-        y = y_before
-        
-        step = max(dist, 8)
-        instance_deactivate_object(self)
-        pushee.move_slide(step * udx, step * udy)
-        instance_activate_object(self)
-        pushee.move_slide(-step * udx, -step * udy)
+    if (cast_mask(x, y, pushee)) {
+        var udx = dx / dist
+        var udy = dy / dist
+        do {
+            instance_deactivate_object(self)
+            var obstructed = pushee.move_slide(udx, udy)
+            instance_activate_object(self)
+            if (obstructed) {
+                break
+            }
+        } until (!cast_mask(x, y, pushee))
     }
 })
 
@@ -112,29 +99,46 @@ push = use_method(function(dx, dy, pushee) {
  * @param {Real} dy
  */
 move = use_method(function(dx, dy) {
-    if (dx == 0 && dy == 0) {
-        return
+    #region Move horizontally.
+    if (dx != 0) {
+        var x_before = x
+        translate(dx, 0)
+        var x_after = x
+        x = x_before
+        var actual_dx = x_after - x_before
+        var drivees = get_drivees(actual_dx, 0)
+        var pushees = get_pushees(actual_dx, 0)
+        x = x_after
+        var n = array_length(drivees)
+        for (var i = 0; i < n; i++) {
+            drive(actual_dx, 0, drivees[i])
+        }
+        n = array_length(pushees)
+        for (var i = 0; i < n; i++) {
+            push(actual_dx, 0, pushees[i])
+        }
     }
-    var x_before = x
-    var y_before = y
-    translate(dx, dy)
-    var x_after = x
-    var y_after = y
-    dx = x_after - x_before
-    dy = y_after - y_before
+    #endregion
     
-    x = x_before
-    y = y_before
-    var drivees = get_drivees(dx, dy)
-    var pushees = get_pushees(dx, dy)
-    x = x_after
-    y = y_after
-    var n = array_length(drivees)
-    for (var i = 0; i < n; i++) {
-        drive(dx, dy, drivees[i])
+    #region Move vertically.
+    if (dy != 0) {
+        var y_before = y
+        translate(0, dy)
+        var y_after = y
+        y = y_before
+        var actual_dy = y_after - y_before
+        var drivees = get_drivees(0, actual_dy)
+        var pushees = get_pushees(0, actual_dy)
+        y = y_after
+        var n = array_length(drivees)
+        for (var i = 0; i < n; i++) {
+            drive(0, actual_dy, drivees[i])
+        }
+        n = array_length(pushees)
+        for (var i = 0; i < n; i++) {
+            push(0, actual_dy, pushees[i])
+        }
     }
-    n = array_length(pushees)
-    for (var i = 0; i < n; i++) {
-        push(dx, dy, pushees[i])
-    }
+    #endregion
 })
+

@@ -1,4 +1,7 @@
+/// Feather use syntax-errors
+
 /**
+ * A 2D vector.
  * @param {Real} [x]
  * @param {Real} [y]
  */
@@ -7,6 +10,7 @@ function Vector(_x = 0, _y = 0) constructor {
     y = _y
     
     /**
+     Get the magnitude (length) of the vector.
      * @return {Real}
      */
     static magnitude = function() {
@@ -14,6 +18,7 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
+     * Get the direction (in degree) of the vector.
      * @return {Real}
      */
     static direktion = function() {
@@ -21,6 +26,7 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
+     * Get a copy of normalized vector.
      * @return {Struct.Vector}
      */
     static normalize = function() {
@@ -29,6 +35,7 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
+     * Get a copy of the vector in anti-direction.
      * @return {Struct.Vector}
      */
     static negative = function() {
@@ -36,7 +43,8 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
-     * @param {Real} deg
+     * Get a copy of rotated vector.
+     * @param {Real} deg Degrees to rotate anti-clockwise.
      * @return {Struct.Vector}
      */
     static rotate = function(deg) {
@@ -49,32 +57,67 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
-     * @param {Real} x
-     * @param {Real} y
+     * Get a copy of added vector.
+     * @param {Real, Struct.Vector} x_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static add = function(_x, _y) {
-        return new Vector(x + _x, y + _y)
+    static add = function(x_or_vec, _y = undefined) {
+        var add_x
+        var add_y
+        if (is_instanceof(x_or_vec, Vector)) {
+            add_x = x_or_vec.x
+            add_y = x_or_vec.y
+        } else {
+            add_x = x_or_vec
+            add_y = _y
+        }
+        return new Vector(x + add_x, y + add_y)
     }
     
     /**
-     * @param {Real} x
-     * @param {Real} y
+     * Get a copy of subtracted vector.
+     * @param {Real, Struct.Vector} x_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static sub = function(_x, _y) {
-        return new Vector(x - _x, y - _y)
+    static sub = function(x_or_vec, _y = undefined) {
+        var sub_x
+        var sub_y
+        if (is_instanceof(x_or_vec, Vector)) {
+            sub_x = x_or_vec.x
+            sub_y = x_or_vec.y
+        } else {
+            sub_x = x_or_vec
+            sub_y = _y
+        }
+        return new Vector(x - sub_x, y - sub_y)
     }
     
     /**
-     * @param {Real} scalar
+     * Get a copy of multiplied vector.
+     * @param {Real, Struct.Vector} x_or_scalar_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static mul = function(scalar) {
-        return new Vector(x * scalar, y * scalar)
+    static mul = function(x_or_scalar_or_vec, _y = undefined) {
+        var mul_x
+        var mul_y
+        if (is_instanceof(x_or_scalar_or_vec, Vector)) {
+            mul_x = x_or_scalar_or_vec.x
+            mul_y = x_or_scalar_or_vec.y
+        } else if (_y == undefined) {
+            mul_x = x_or_scalar_or_vec
+            mul_y = x_or_scalar_or_vec
+        } else {
+            mul_x = x_or_scalar_or_vec
+            mul_y = _y
+        }
+        return new Vector(x * mul_x, y * mul_y)
     }
     
     /**
+     * Reverse the direction of the vector.
      * @return {Struct.Vector}
      */
     static negative_ = function() {
@@ -84,6 +127,7 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
+     * Normalize the vector.
      * @return {Struct.Vector}
      */
     static normalize_ = function() {
@@ -94,39 +138,74 @@ function Vector(_x = 0, _y = 0) constructor {
     }
     
     /**
-     * @param {Real} x
-     * @param {Real} y
+     * Add a vector.
+     * @param {Real, Struct.Vector} x_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static add_ = function(_x, _y) {
-        x += _x
-        y += _y
+    static add_ = function(x_or_vec, _y = undefined) {
+        var add_x
+        var add_y
+        if (is_instanceof(x_or_vec, Vector)) {
+            add_x = x_or_vec.x
+            add_y = x_or_vec.y
+        } else {
+            add_x = x_or_vec
+            add_y = _y
+        }
+        x += add_x
+        y += add_y
         return self
     }
     
     /**
-     * @param {Real} x
-     * @param {Real} y
+     * Subtract a vector.
+     * @param {Real, Struct.Vector} x_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static sub_ = function(_x, _y) {
-        x -= _x
-        y -= _y
+    static sub_ = function(x_or_vec, _y = undefined) {
+        var sub_x
+        var sub_y
+        if (is_instanceof(x_or_vec, Vector)) {
+            sub_x = x_or_vec.x
+            sub_y = x_or_vec.y
+        } else {
+            sub_x = x_or_vec
+            sub_y = _y
+        }
+        x -= sub_x
+        y -= sub_y
         return self
     }
     
     /**
-     * @param {Real} scalar
+     * Multiply a vector or scalar.
+     * @param {Real, Struct.Vector} x_or_scalar_or_vec
+     * @param {Real} [y]
      * @return {Struct.Vector}
      */
-    static mul_ = function(scalar) {
-        x *= scalar
-        y *= scalar
+    static mul_ = function(x_or_scalar_or_vec, _y = undefined) {
+        var mul_x
+        var mul_y
+        if (is_instanceof(x_or_scalar_or_vec, Vector)) {
+            mul_x = x_or_scalar_or_vec.x
+            mul_y = x_or_scalar_or_vec.y
+        } else if (_y == undefined) {
+            mul_x = x_or_scalar_or_vec
+            mul_y = x_or_scalar_or_vec
+        } else {
+            mul_x = x_or_scalar_or_vec
+            mul_y = _y
+        }
+        x *= mul_x
+        y *= mul_y
         return self
     }
     
     /**
-     * @param {Real} deg
+     * Rotate the vector.
+     * @param {Real} deg Degrees to rotate anti-clockwise.
      * @return {Struct.Vector}
      */
     static rotate_ = function(deg) {

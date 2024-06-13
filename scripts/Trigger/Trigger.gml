@@ -1,3 +1,5 @@
+/// Feather use syntax-errors
+
 enum TriggerState {
     Inactive, Pending, Running, Finished,
 }
@@ -73,7 +75,7 @@ function Trigger(index, inst = other) constructor {
 
 /**
  * Trigges executed in sequential order.
- * @param {Array<Struct.Trigger>} children Child triggers.
+ * @param {Array<Struct>} children Child triggers.
  */
 function TriggerSequence(children) constructor {
     self.children = children
@@ -127,7 +129,7 @@ function TriggerSequence(children) constructor {
  * Triggers executed concurrently.
  * The indices of child triggers are ignored.
  * @param {Real} index Trigger index.
- * @param {Array<Struct.Trigger>} children Child triggers.
+ * @param {Array<Struct>} children Child triggers.
  */
 function TriggerGroup(index, children) constructor {
     self.index = index
@@ -180,7 +182,7 @@ function TriggerGroup(index, children) constructor {
 /**
  * Delayed trigger decorator.
  * @param {Real} delay Seconds to delay.
- * @param {Struct.Trigger} trigger Trigger to decorate.
+ * @param {Struct} trigger Trigger to decorate.
  */
 function DelayedTrigger(delay, trigger) constructor {
     self.delay = delay

@@ -13,8 +13,8 @@
     "path":"folders/Player.yy",
   },
   "parentObjectId":{
-    "name":"GameObject",
-    "path":"objects/GameObject/GameObject.yy",
+    "name":"obj_kinematic",
+    "path":"objects/obj_kinematic/obj_kinematic.yy",
   },
   "persistent":false,
   "physicsAngularDamping":0.1,

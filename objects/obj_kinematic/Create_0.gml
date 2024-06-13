@@ -1,36 +1,51 @@
 /// @desc Kinematic motion declarations.
 
+/// Feather use syntax-errors
+
 downdir = new Vector(0, 1)
-substep = 8
+substep = max(
+    (bbox_right - bbox_left) / 2,
+    (bbox_bottom - bbox_top) / 2,
+    8
+)
 max_gap = 0.25
 floor_snap = 8
 box = false
 velocity = new Vector()
-trigger = undefined
+_trigger = undefined
 _driven_x = 0
 
 /**
+ * Bind a trigger.
+ * @self obj_kinematic
+ * @param {Struct} trigger
+ */
+setup_trigger = use_method(function(trigger) {
+    _trigger = trigger
+})
+
+/**
  * Trigger behaviour.
- * @self GameObject
+ * @self obj_kinematic
  */
 update_trigger = use_method(function() {
-    if (trigger != undefined) {
-        var state = trigger.get_state()
-        var index = trigger.get_index()
+    if (_trigger != undefined) {
+        var state = _trigger.get_state()
+        var index = _trigger.get_index()
         if (state == TriggerState.Finished) {
-            trigger = undefined
+            _trigger = undefined
         } else {
             if (state == TriggerState.Inactive && (index == -1 || index == global.triggered_index)) {
-                trigger.start()
+                _trigger.start()
             }
-            trigger.update()
+            _trigger.update()
         }
     }
 })
 
 /**
  * Transform a global vector into local coordinate system.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real, Struct.Vector} x
  * @param {Real} [y]
  * @return {Struct.Vector}
@@ -48,7 +63,7 @@ to_local = use_method(function(_x, _y = 0) {
     
 /**
  * Transform a local vector into global coordinate system.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real, Struct.Vector} x
  * @param {Real} [y]
  * @return {Struct.Vector}
@@ -70,7 +85,7 @@ to_global = use_method(function(_x, _y = 0) {
  * check whether it collides with specific instances.
  * Collided instances that fail to pass the filter will be ignored.
  * If the object is not provided, use obstructed_at instead (fileter will be ignored).
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} x
  * @param {Real} y
  * @param {Asset.GMObject, Id.Instance, Id.TileMapElement, Constant.All, Array} [obj]
@@ -104,7 +119,7 @@ cast_mask = use_method(function(_x, _y, obj = undefined, filter = undefined) {
  * Built-in function instance_place_list with filter and returns array.
  * Assuming current instance is placed at (x, y), get all instances it collides with.
  * Collided instances that fail to pass the filter will be ignored.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} x
  * @param {Real} y
  * @param {Asset.GMObject, Id.Instance, Id.TileMapElement, Constant.All, Array} obj
@@ -130,7 +145,7 @@ get_casted_by_mask = use_method(function(_x, _y, obj, ordered, filter = undefine
  * Probe whether there are any instances (of specific object) on the displacement (dx, dy).
  * Probed instances that fail to pass the filter will be ignored.
  * If the object is not provided, use obstructed_at instead.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  * @param {Asset.GMObject, Id.Instance, Id.TileMapElement, Constant.All, Array} [obj]
@@ -166,7 +181,7 @@ probe = use_method(function(dx, dy, obj = undefined, filter = undefined) {
 /**
  * Get all instances (of specific object) on the displacement (dx, dy).
  * Probed instances that fail to pass the filter will be ignored.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  * @param {Asset.GMObject, Id.Instance, Id.TileMapElement, Constant.All, Array} obj
@@ -181,12 +196,12 @@ get_probed = use_method(function(dx, dy, obj, ordered, filter = undefined) {
         return probed
     }
     
-    var record_of_probed = ds_map_create()
+    // Deactivate probed instances to avoid duplications.
     var n = array_length(probed)
     for (var i = 0; i < n; i++) {
-        record_of_probed[? probed[i].id] = true
+        instance_deactivate_object(probed[i])
     }
-
+    
     var udx = dx / dist
     var udy = dy / dist
     var probe_x = x
@@ -201,23 +216,25 @@ get_probed = use_method(function(dx, dy, obj, ordered, filter = undefined) {
         n = array_length(casted)
         for (var i = 0; i < n; i++) {
             var collided = casted[i]
-            var iid = collided.id
-            if (record_of_probed[? iid] == undefined) {
-                record_of_probed[? iid] = true
+            if (!is_callable(filter) || filter(collided)) {
                 array_push(probed, collided)
+                instance_deactivate_object(collided)
             }
         }
-        delete casted
         dist_to_travel -= substep
     }
     
-    ds_map_destroy(record_of_probed)
+    n = array_length(probed)
+    for (var i = 0; i < n; i++) {
+        instance_activate_object(probed[i])
+    }
+    
     return probed
 })
 
 /**
  * Check whether an instance is beneath self.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Id.Instance} instance
  * @return {Bool}
  */
@@ -238,7 +255,7 @@ is_beneath = use_method(function(instance) {
  * Move along displacement (dx, dy) and touch to obstacles.
  * Requires:
  *   - point_distance(0, 0, dx, dy) <= substep.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  */
@@ -270,7 +287,7 @@ touch = use_method(function(dx, dy) {
 
 /**
  * Move along displacement (dx, dy) until touching obstacles.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  * @return {Bool} Whether the movement is obstructed.
@@ -307,7 +324,7 @@ translate = use_method(function(dx, dy) {
  * Move along displacement (dx, dy) until touching obstacles.
  * If the movement is obstructed, the displacement will be decomposed
  * in the local coordinate system.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  * @return {Real} A 2-bit mask whose lower and upper bit stand for 
@@ -333,7 +350,7 @@ translate_orthogonal = use_method(function(dx, dy) {
 /**
  * Customized move_and_collide.
  * This method moves the instance as if we are playing a top-down-view game.
- * @self GameObject
+ * @self obj_kinematic
  * @param {Real} dx
  * @param {Real} dy
  * @return {Bool} Whether the movement is obstructed.
@@ -447,19 +464,18 @@ move_slide = use_method(function(dx, dy) {
 })
 
 /**
- * Compute the actual driven displacement in local coordinate system.
+ * Compute the actual driven displacement.
  * @param {Real} driver_dx
  * @param {Real} driver_dy
  * @return {Struct.Vector}
  */
-compute_local_driven_displacement = use_method(function(driver_dx, driver_dy) {
+compute_driven_displacement = use_method(function(driver_dx, driver_dy) {
     var driver_disp_local = to_local(driver_dx, driver_dy)
     if (driver_disp_local.x == 0) {
-        driver_disp_local.x = 0
+        //
     } else if (_driven_x == 0) {
         _driven_x = driver_disp_local.x
-    }
-    if (sign(driver_disp_local.x) == sign(_driven_x)) {
+    } else if (sign(driver_disp_local.x) == sign(_driven_x)) {
         if (abs(driver_disp_local.x) <= abs(_driven_x)) {
             driver_disp_local.x = 0
         } else {
@@ -470,7 +486,7 @@ compute_local_driven_displacement = use_method(function(driver_dx, driver_dy) {
     } else {
         _driven_x += driver_disp_local.x
     }
-    return driver_disp_local
+    return to_global(driver_disp_local)
 })
 
 /**

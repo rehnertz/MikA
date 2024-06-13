@@ -1,3 +1,5 @@
+/// Feather use syntax-errors
+
 /**
  * Trigger of rotation.
  * @param {Real} index Trigger index.
